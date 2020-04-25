@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Text;
 using Brigadier.NET.Context;
-using Brigadier.NET.Util;
 
 namespace Brigadier.NET.Suggestion
 {
 	public class Suggestion : IComparable<Suggestion>, IEquatable<Suggestion>
 	{
-		public Suggestion(StringRange range, string text, IMessage tooltip = null)
+        public Suggestion(StringRange range, string text, IMessage tooltip = null)
 		{
 			Range = range;
 			Text = text;
@@ -39,30 +38,29 @@ namespace Brigadier.NET.Suggestion
 			return result.ToString();
 		}
 
-		public override bool Equals(object obj)
-		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			return obj is Suggestion other 
-			       && Equals(other);
+        public override bool Equals(object obj)
+        {
+            return ReferenceEquals(this, obj) || 
+                   obj is Suggestion other && EqualsInternal(other);
+        }
+
+        public bool Equals(Suggestion other)
+        {
+            if (other is null) return false;
+            return ReferenceEquals(this, other) || EqualsInternal(other);
+        }
+
+        private bool EqualsInternal(Suggestion other)
+        {
+            return Equals(Range, other.Range) &&
+                   Equals(Text, other.Text) &&
+                   Equals(Tooltip, other.Tooltip);
 		}
 
-		public bool Equals(Suggestion other)
+        public override int GetHashCode()
 		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			return Equals(Range, other.Range) 
-			       && string.Equals(Text, other.Text) 
-			       && Equals(Tooltip, other.Tooltip);
-		}
-
-		public override int GetHashCode()
-		{
-			return HashCode.Start
-				.Hash(Range)
-				.Hash(Text)
-				.Hash(Tooltip);
-		}
+			return HashCode.Combine(Range, Text, Tooltip);
+        }
 
 		public override string ToString()
 		{
@@ -71,7 +69,7 @@ namespace Brigadier.NET.Suggestion
 
 		public virtual int CompareTo(Suggestion o)
 		{
-			return String.Compare(Text, o.Text, StringComparison.Ordinal);
+			return string.Compare(Text, o.Text, StringComparison.Ordinal);
 		}
 
 		public virtual int CompareToIgnoreCase(Suggestion b)

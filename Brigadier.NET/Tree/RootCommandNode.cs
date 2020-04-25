@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Brigadier.NET.Builder;
 using Brigadier.NET.Context;
 using Brigadier.NET.Suggestion;
-using Brigadier.NET.Util;
 
 namespace Brigadier.NET.Tree
 {
@@ -35,20 +34,22 @@ namespace Brigadier.NET.Tree
 
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			return obj is RootCommandNode<TSource> other && Equals(other);
+            return ReferenceEquals(this, obj) ||
+                   obj is RootCommandNode<TSource> other && Equals(other);
 		}
 
 		public bool Equals(RootCommandNode<TSource> other)
-		{
-			return true;
+        {
+            if (other is null) return false;
+            return ReferenceEquals(this, other) || EqualsInternal(other);
 		}
 
+        private bool EqualsInternal(RootCommandNode<TSource> other) => base.Equals(other);
+
 		public override int GetHashCode()
-		{
-			return HashCode.Start;
-		}
+        {
+            return base.GetHashCode();
+        }
 
 		public override IArgumentBuilder<TSource, CommandNode<TSource>> CreateBuilder()
 		{

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Brigadier.NET.Context;
-using Brigadier.NET.Util;
 
 namespace Brigadier.NET.Suggestion
 {
@@ -28,25 +27,25 @@ namespace Brigadier.NET.Suggestion
 
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			return obj is Suggestions other 
-			       && Equals(other);
+			return ReferenceEquals(this, obj) ||
+                   obj is Suggestions other && Equals(other);
 		}
 
 		public bool Equals(Suggestions other)
 		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			return Equals(Range, other.Range) 
-			       && Equals(List, other.List);
+			if (other is null) return false;
+			return ReferenceEquals(this, other) || EqualsInternal(other);
+        }
+
+        private bool EqualsInternal(Suggestions other)
+        {
+            return Equals(Range, other.Range)
+                   && Equals(List, other.List);
 		}
 
 		public override int GetHashCode()
 		{
-			return HashCode.Start
-				.Hash(Range)
-				.Hash(List);
+			return HashCode.Combine(Range, List);
 		}
 
 		public override string ToString()

@@ -1,11 +1,10 @@
 ﻿using System;
-using Brigadier.NET.Util;
 
 namespace Brigadier.NET.Context
 {
-	public struct StringRange
+	public readonly struct StringRange
 	{
-		public StringRange(int start, int end)
+        public StringRange(int start, int end)
 		{
 			Start = start;
 			End = end;
@@ -45,21 +44,20 @@ namespace Brigadier.NET.Context
 
 		public int Length => End - Start;
 
-		public override bool Equals(object o)
-		{
-			if (!(o is StringRange)) {
-				return false;
-			}
-			var that = (StringRange)o;
-			return Start == that.Start && End == that.End;
-		}
+        public override bool Equals(object obj)
+        {
+            return obj is StringRange other && Equals(other);
+        }
 
-		public override int GetHashCode()
-		{
-			return HashCode.Start
-				.Hash(Start)
-				.Hash(End);
-		}
+        public bool Equals(StringRange other)
+        {
+            return Equals(Start, other.Start) && Equals(End, other.End);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Start, End);
+        }
 
 		public override string ToString()
 		{

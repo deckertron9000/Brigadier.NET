@@ -3,12 +3,11 @@
 
 using System;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Horology;
 using Brigadier.NET;
 using Brigadier.NET.Builder;
 using Brigadier.NET.Tree;
 
-[MarkdownExporterAttribute.GitHub]
+[MarkdownExporterAttribute.GitHub, MemoryDiagnoser]
 public class ParsingBenchmarks {
     private CommandDispatcher<object> subject;
 
@@ -83,25 +82,21 @@ public class ParsingBenchmarks {
     }
 
     [Benchmark]
-    [MemoryDiagnoser]
-	public void parse_a1i() {
+    public void parse_a1i() {
         subject.Parse("a 1 i", new Object());
     }
 
     [Benchmark]
-    [MemoryDiagnoser]
 	public void parse_c() {
         subject.Parse("c", new Object());
     }
 
     [Benchmark]
-    [MemoryDiagnoser]
 	public void parse_k1i() {
         subject.Parse("k 1 i", new Object());
     }
 
     [Benchmark]
-    [MemoryDiagnoser]
 	public void parse_() {
         subject.Parse("c", new Object());
     }

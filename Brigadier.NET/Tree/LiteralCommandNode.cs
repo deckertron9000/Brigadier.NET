@@ -5,7 +5,6 @@ using Brigadier.NET.Builder;
 using Brigadier.NET.Context;
 using Brigadier.NET.Exceptions;
 using Brigadier.NET.Suggestion;
-using Brigadier.NET.Util;
 
 namespace Brigadier.NET.Tree
 {
@@ -76,23 +75,25 @@ namespace Brigadier.NET.Tree
 
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			return obj is LiteralCommandNode<TSource> other && Equals(other);
+            return ReferenceEquals(this, obj) ||
+                   obj is LiteralCommandNode<TSource> other && Equals(other);
 		}
 
 		public bool Equals(LiteralCommandNode<TSource> other)
 		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			return string.Equals(Literal, other.Literal);
-		}
+			if (other is null) return false;
+			return ReferenceEquals(this, other) || EqualsInternal(other);
+        }
+
+        private bool EqualsInternal(LiteralCommandNode<TSource> other)
+        {
+            return Equals(Literal, other.Literal);
+        }
 
 		public override int GetHashCode()
-		{
-			return HashCode.Start
-				.Hash(Literal);
-		}
+        {
+            return Literal.GetHashCode();
+        }
 
 		public override string UsageText => Literal;
 

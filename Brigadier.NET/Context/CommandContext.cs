@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Brigadier.NET.Tree;
-using Brigadier.NET.Util;
 
 namespace Brigadier.NET.Context
 {
 	public class CommandContext<TSource> : IEquatable<CommandContext<TSource>>
 	{
-		private readonly IDictionary<string, IParsedArgument> _arguments;
+        private readonly IDictionary<string, IParsedArgument> _arguments;
 		private readonly bool _forks;
 
 	    public CommandContext(TSource source, string input, IDictionary<string, IParsedArgument> arguments, Command<TSource> command, CommandNode<TSource> rootNode, List<ParsedCommandNode<TSource>> nodes, StringRange range, CommandContext<TSource> child, RedirectModifier<TSource> modifier, bool forks)
@@ -73,37 +72,34 @@ namespace Brigadier.NET.Context
 			}
 		}
 
-		public override bool Equals(object obj)
-		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			return obj is CommandContext<TSource> other && Equals(other);
-		}
+        public override bool Equals(object obj)
+        {
+            return ReferenceEquals(this, obj) || 
+                   obj is CommandContext<TSource> other && EqualsInternal(other);
+        }
 
 		public bool Equals(CommandContext<TSource> other)
-		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			return _arguments.SequenceEqual(other._arguments) 
-			       && Equals(RootNode, other.RootNode) 
-			       && Nodes.SequenceEqual(other.Nodes) 
-			       && Equals(Command, other.Command) 
-			       && EqualityComparer<TSource>.Default.Equals(Source, other.Source) 
-			       && Equals(Child, other.Child);
+        {
+            if (other is null) return false;
+            return ReferenceEquals(this, other) || EqualsInternal(other);
+        }
+
+        private bool EqualsInternal(CommandContext<TSource> other)
+        {
+            return Equals(_arguments, other._arguments)
+                   && Equals(RootNode, other.RootNode)
+                   && Equals(Nodes, other.Nodes)
+                   && Equals(Command, other.Command)
+                   && EqualityComparer<TSource>.Default.Equals(Source, other.Source)
+                   && Equals(Child, other.Child);
 		}
 
-		public override int GetHashCode()
-		{
-			return HashCode.Start
-				.Hash(Source)
-				.Hash(_arguments)
-				.Hash(Command)
-				.Hash(RootNode)
-				.Hash(Nodes)
-				.Hash(Child);
-		}
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Source, _arguments, Command, RootNode, Nodes, Child);
+        }
 
-		public RedirectModifier<TSource> RedirectModifier { get; }
+        public RedirectModifier<TSource> RedirectModifier { get; }
 
 		public StringRange Range { get; }
 

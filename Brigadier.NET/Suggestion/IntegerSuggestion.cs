@@ -1,12 +1,13 @@
 ﻿using System;
 using Brigadier.NET.Context;
-using Brigadier.NET.Util;
 
 namespace Brigadier.NET.Suggestion
 {
 	public class IntegerSuggestion : Suggestion, IEquatable<IntegerSuggestion>
 	{
-		public IntegerSuggestion(StringRange range, int value, IMessage tooltip = null)
+        
+
+        public IntegerSuggestion(StringRange range, int value, IMessage tooltip = null)
 			: base(range, value.ToString(), tooltip)
 		{
 			Value = value;
@@ -16,25 +17,26 @@ namespace Brigadier.NET.Suggestion
 
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			return obj is IntegerSuggestion other 
-			       && Equals(other);
+			return ReferenceEquals(this, obj) || 
+                   obj is IntegerSuggestion other && EqualsInternal(other);
 		}
 
 		public bool Equals(IntegerSuggestion other)
 		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			return Value == other.Value 
-			       && base.Equals(other);
+			if (other is null) return false;
+			return ReferenceEquals(this, other) || EqualsInternal(other);
+        }
+
+        private bool EqualsInternal(IntegerSuggestion other)
+        {
+            return Value == other.Value
+                   && base.Equals(other);
 		}
 
-		public override int GetHashCode()
-		{
-			return HashCode.Start
-				.Hash(Value);
-		}
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), Value);
+        }
 
 		public override string ToString()
 		{

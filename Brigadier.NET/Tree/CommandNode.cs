@@ -25,7 +25,7 @@ namespace Brigadier.NET.Tree
 			IsFork = forks;
 		}
 
-		public Command<TSource> Command { get; set; }
+		public Command<TSource> Command { get; private set; }
 
 		//PortNote: ICollection might be needed
 		public ICollection<CommandNode<TSource>> Children => _children.Values;
@@ -186,7 +186,29 @@ namespace Brigadier.NET.Tree
 			}
 		}
 
-		public int CompareTo(CommandNode<TSource> o)
+        public override bool Equals(object obj)
+        {
+			return ReferenceEquals(this, obj) ||
+                   obj is CommandNode<TSource> other && EqualsInternal(other);
+		}
+
+        public bool Equals(CommandNode<TSource> other)
+        {
+            if (other is null) return false;
+            return ReferenceEquals(this, other) || EqualsInternal(other);
+        }
+
+        private bool EqualsInternal(CommandNode<TSource> other)
+        {
+            return Equals(Children, other.Children) && Equals(Command, other.Command);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Children, Command);
+        }
+
+        public int CompareTo(CommandNode<TSource> o)
 		{
 			if (this is LiteralCommandNode<TSource> == o is LiteralCommandNode<TSource>) {
 				return string.Compare(SortedKey, o.SortedKey, StringComparison.Ordinal);
